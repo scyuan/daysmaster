@@ -13,77 +13,62 @@
 			<div class="list" ref="wrap">
 				<div class="items">
 					<div class="item">
-						<div class="desc">iPhone已经发布</div>
-						<div class="num">3801</div>
-						<div class="tian">天</div>
+						<div class="detail">
+							<div class="desc">iPhone已经发布</div>
+							<div class="num">3801</div>
+							<div class="tian">天</div>
+						</div>
 					</div>
 					<div class="item">
-						<div class="desc">iPhone已经发布</div>
-						<div class="num">3801</div>
-						<div class="tian">天</div>
+						<div class="detail">
+							<div class="desc">iPhone已经发布</div>
+							<div class="num">3801</div>
+							<div class="tian">天</div>
+						</div>
 					</div>
 					<div class="item">
-						<div class="desc">iPhone已经发布</div>
-						<div class="num">3801</div>
-						<div class="tian">天</div>
+						<div class="detail">
+							<div class="desc">iPhone已经发布</div>
+							<div class="num">3801</div>
+							<div class="tian">天</div>
+						</div>
 					</div>
 					<div class="item">
-						<div class="desc">iPhone已经发布</div>
-						<div class="num">3801</div>
-						<div class="tian">天</div>
+						<div class="detail">
+							<div class="desc">iPhone已经发布</div>
+							<div class="num">3801</div>
+							<div class="tian">天</div>
+						</div>
 					</div>
 					<div class="item">
-						<div class="desc">iPhone已经发布</div>
-						<div class="num">3801</div>
-						<div class="tian">天</div>
+						<div class="detail">
+							<div class="desc">iPhone已经发布</div>
+							<div class="num">3801</div>
+							<div class="tian">天</div>
+						</div>
 					</div>
 					<div class="item">
-						<div class="desc">iPhone已经发布</div>
-						<div class="num">3801</div>
-						<div class="tian">天</div>
+						<div class="detail">
+							<div class="desc">iPhone已经发布</div>
+							<div class="num">3801</div>
+							<div class="tian">天</div>
+						</div>
 					</div>
 					<div class="item">
-						<div class="desc">iPhone已经发布</div>
-						<div class="num">3801</div>
-						<div class="tian">天</div>
+						<div class="detail">
+							<div class="desc">iPhone已经发布</div>
+							<div class="num">3801</div>
+							<div class="tian">天</div>
+						</div>
 					</div>
 					<div class="item">
-						<div class="desc">iPhone已经发布</div>
-						<div class="num">3801</div>
-						<div class="tian">天</div>
+						<div class="detail">
+							<div class="desc">iPhone已经发布</div>
+							<div class="num">3801</div>
+							<div class="tian">天</div>
+						</div>
 					</div>
-					<div class="item">
-						<div class="desc">iPhone已经发布</div>
-						<div class="num">3801</div>
-						<div class="tian">天</div>
-					</div>
-					<div class="item">
-						<div class="desc">iPhone已经发布</div>
-						<div class="num">3801</div>
-						<div class="tian">天</div>
-					</div>
-					<div class="item">
-						<div class="desc">iPhone已经发布</div>
-						<div class="num">3801</div>
-						<div class="tian">天</div>
-					</div>
-					<div class="item">
-						<div class="desc">iPhone已经发布</div>
-						<div class="num">3801</div>
-						<div class="tian">天</div>
-					</div>
-					<div class="item">
-						<div class="desc">iPhone已经发布</div>
-						<div class="num">3801</div>
-						<div class="tian">天</div>
-					</div>
-					<!-- <div class="item">09</div>
-					<div class="item">10</div>
-					<div class="item">11</div>
-					<div class="item">12</div>
-					<div class="item">13</div>
-					<div class="item">14</div>
-					<div class="item">15</div> -->
+					
 				</div>		
 				
 			</div>
@@ -98,10 +83,13 @@
 				var _this = this;
 				//离顶部距离
 				var offsetTop = _this.$refs.home.offsetTop;
-					//窗口的高度
+				//窗口的高度
 				var height = window.screen.height;
 				console.log(height)
 				_this.$refs.home.style.height=(height-offsetTop)+'px'
+
+				//初始化list的高度
+				this.$refs.wrap.style.height = (height-offsetTop-130) + "px";
 			}
 		},
 		mounted:function() {
@@ -117,11 +105,10 @@
 			}else{
 				this.scroll.refresh();
 			}
-
 		}
 	}
 </script>
-<style>
+<style scoped>
 	.home{
 		background: #F5F5F5;
 		padding: 15px;
@@ -138,9 +125,6 @@
 		height: 100px;
 		background: #fff;
 		border-radius: 10px;
-		position: absolute;
-		top: 0;
-		z-index: 10;
 	}
 	.wenzi{
 		float: left;
@@ -186,29 +170,34 @@
 	}
 	.list{
 		width: 100%;
-		height: 100%;
-		padding-top: 100px;
 		box-sizing: border-box;
+		overflow: hidden;
 	}
 	.item{
 		width: 100%;
-		height: 40px;
-		background: #FdFdFd;
-		margin: 10px 0;
+		height: 60px;
 		border-radius: 10px;
-		overflow: hidden;
+		display: flex;
+		align-items: center;
 	}
-	.item div{
+	.detail div{
 		height: 100%;
 		float: left;
 		line-height: 40px;
 		box-sizing: border-box;
 	}
-	.item .desc{
+	.item .detail{
+		height: 40px;
+		width: 100%;
+		border-radius: 15px;
+		overflow: hidden;
+	}
+	.detail .desc{
 		width: 64%;
 		padding-left: 10px;
+		background: #fff;
 	}
-	.item .num{
+	.detail .num{
 		width: 25%;
 		background: #66B3FF;
 		color: #fff;
@@ -216,7 +205,7 @@
 		font-size: 20px;
 		font-weight: bold;
 	}
-	.item .tian{
+	.detail .tian{
 		background: #0054A8;
 		width: 11%;
 		font-size: 20px;
