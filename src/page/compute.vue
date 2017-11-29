@@ -1,7 +1,7 @@
 <template>
 	<div class="compute" ref='compute'>
 		<div class="content">
-			<div class="title" v-on:click='openPicker()'>
+			<div class="title" v-on:click='openCalendar()'>
 				<p>从</p>
 				<p>{{selectedData}}</p>
 				<p>开始</p>
@@ -33,10 +33,11 @@
 			</div>
 		</div>
 		<datepicker ref="datepicker"></datepicker>
+		<picker ref='picker' v-on:returndate='getDate'></picker>
 	</div>
 </template>
 <script>
-
+	import Picker from '../components/picker'
 	export default{
 		data:function(){
 			return {
@@ -64,7 +65,38 @@
 		    },
 		    closePicker(){
 		        this.isOpen = false;
-		    }
+		    },
+		    openCalendar:function(){
+				var datas = [];
+				var year = [];
+				for(let i=1900;i<2200;i++){
+					var temp ={}
+					temp.text = i+'年';
+					temp.value = i;
+					year.push(temp)
+				}
+				var month = [];
+				for(let i=1;i<13;i++){
+					var temp ={}
+					temp.text = i+'月';
+					temp.value = i;
+					month.push(temp)
+				}
+				var date = [];
+				for(let i=1;i<32;i++){
+					var temp ={}
+					temp.text = i+'日';
+					temp.value = i;
+					date.push(temp)
+				}
+				datas.push(year);
+				datas.push(month);
+				datas.push(date);
+				this.$refs.picker.isShow("returndate",datas);
+			},
+		},
+		getDate:function(val){
+			alert(val);
 		},
 		mounted:function(){
 			var _this = this;
@@ -74,7 +106,7 @@
 			}
 		},
 		components:{
-		
+			Picker
 		}
 	}
 </script>

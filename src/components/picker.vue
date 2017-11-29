@@ -79,6 +79,9 @@
 				});
 				
 				this.picker.show(function(){
+					if(datas.length!=3){
+						return ;
+					}
 					var now = new Date();
 					var year = now.getFullYear();
 					var month = now.getMonth()+1;

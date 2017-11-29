@@ -1,7 +1,7 @@
 <template>
   <div id="app" ref='self'>
     <sidebar ref='sidebar'></sidebar>
-    <add ref='add'></add>
+    <add ref='add' v-on:refresh='refresh'></add>
     <div class="header">
       <i class="icon icon-list" @click='showSideBar()' v-show='this.$store.state.showSideBarIcon'>&#xe602;</i>
       <p>{{this.$store.state.currTile}}</p>
@@ -15,7 +15,7 @@
       <i class="icon icon-menu icon-more" @click="goPage('/more')">&#xe61b;</i>
       <span class="hengxian" ref='hengxian'></span>
     </div>
-    <router-view></router-view>
+    <router-view ref='home'></router-view>
   </div>
 </template>
 
@@ -27,6 +27,9 @@ export default {
     Sidebar,Add
   },
   methods:{
+    refresh:function(){
+      this.$refs.home.refresh();
+    },
     showAdd:function(){
         this.$refs.add.show();
     },
@@ -41,7 +44,7 @@ export default {
       //更改横线的位置
       var width = (window.screen.width)/5;
       var index = this.getIndexByPath(path);
-      console.log('index:'+index);
+    
       this.$store.commit('changeCurrPage',path);
       
       this.$refs.hengxian.style.left = width*index + 'px';
@@ -115,12 +118,11 @@ export default {
     window.onresize = function(){
       _this.initHengxian();
     }
-    console.log(this.$route.path)
-
     this.changeIconClass(this.getIndexByPath(this.$route.path));
     this.$store.commit('changeCurrPage',this.$route.path);
     var width = (window.screen.width)/5;
     this.$refs.hengxian.style.left = width*this.getIndexByPath(this.$route.path) + 'px';
+    //window.localStorage.clear();
   },
   created(){
     //初始化header
@@ -212,5 +214,9 @@ export default {
   }
   .icon-doc{
     line-height: 40px;
+  }
+  .header p{
+    font-weight: bold;
+    font-size: 19px;
   }
 </style>

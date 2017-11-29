@@ -10,7 +10,7 @@
 		    	<div class="form">
 		    		<div class="input_group">
 		    			<i class="icon icon-form">&#xe669;</i>
-		    			<input type="text" placeholder="点击这里输入事件名称">
+		    			<input type="text" v-model='name' placeholder="点击这里输入事件名称">
 		    		</div>  
 		    		<div class="input_group" @click='openCalendar()'>
 		    			<i class="icon icon-form">&#xe635;</i>
@@ -18,12 +18,12 @@
 		    				<p class="time">2017-11-28 星期三</p>
 		    			</div>
 		    		</div>
-		    		<div class="input_group">
+		    		<div class="input_group" @click='openAssort()'>
 		    			<i class="icon icon-form">&#xe603;</i>
 		    			<div class="box">
 		    				<p class="a">分类</p>
 		    				<i class="icon icon-form icon-right">&#xe642;</i>
-		    				<p class="b">生活</p>
+		    				<p class="b" id='assort'>生活</p>
 		    			</div>
 		    		</div>
 		    		<div class="input_group">
@@ -44,30 +44,93 @@
 		    				<p class="b" id='recicle'>不重复</p>
 		    			</div>
 		    		</div>
-		    		<div class="input_group" style="border-bottom:0">
+		    		<div class="input_group" v-on:click='openReminde()' style="border-bottom:0">
 		    			<i class="icon icon-form">&#xe7eb;</i>
 		    			<div class="box">
 		    				<p class="a">提醒</p>
 		    				<i class="icon icon-form icon-right">&#xe642;</i>
-		    				<p class="b">无提醒</p>
+		    				<p class="b" id='reminde'>不提醒</p>
 		    			</div>
 		    		</div>      
 		    	</div>
-		    	<div class="submit">保存</div>	
+		    	<div class="submit" @click='save()'>保存</div>	
 		    </div>
 			<picker ref='picker' v-on:returndata='getData' v-on:returndate='getDate'></picker>
+			<assort ref='assort' v-on:returnassort='getAssort'></assort>
+			<reminde ref='reminde' v-on:returnremind='getRemind'></reminde>
 		</div>
 	</transition>
 </template>
 <script>
 import Picker from './picker'
+import Assort from './assort'
+import Reminde from './reminde'
 	export default{
 		data:function(){
 			return {
 				isOpen:false,
+				name:'',
+				storage:window.localStorage
 			}
 		},
 		methods:{
+			save:function(){
+				//事件名称
+				var name = this.name;
+				if(name==''){
+					return ;
+				}
+
+				//获取日期
+				var full_time = document.getElementsByClassName('time')[0].innerHTML;
+				var time = full_time.split(' ')[0];
+				var date = new Date();
+				var now = date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate();
+				if(this.$moment(time).isBefore(now)){
+					name = name + '已经过去'
+				}else{
+					name = name + '还有'
+				}
+				//获取分类
+				var assort = document.getElementById('assort').innerHTML;
+				//获取置顶
+				var oBtn = document.getElementsByClassName('btn')[0];
+				var zhiding = true;
+				if(oBtn.className == 'btn btnon'){
+					zhiding = false;
+				}else{
+					zhiding = true;
+				}
+				//获取重复
+				var repeat = document.getElementById('recicle').innerHTML;
+				//获取remind
+				var remind = document.getElementById('reminde').innerHTML;
+				var record = {
+					full_time:full_time,
+					desc:name,
+					time:time,
+					assort:assort,
+					zhiding:zhiding,
+					repeat:repeat,
+					remind:remind
+				};
+				this.$store.commit('addNewRecord',record);
+				this.$emit('refresh');
+				this.isOpen = false;
+			},
+			getRemind:function(newRemind){
+				document.getElementById('reminde').innerHTML = newRemind;
+			},
+			openReminde:function(){
+				this.$refs.reminde.isShow(document.getElementById('reminde').innerHTML);
+			},
+			getAssort:function(newAssore){
+				document.getElementById('assort').innerHTML=newAssore;
+			},
+			openAssort:function(){
+				var assort = document.getElementById('assort').innerHTML;
+				this.$refs.assort.isShow(assort);
+			},
 			zhiding:function(){
 
 				var btn = document.getElementsByClassName('btn')[0];
@@ -188,7 +251,7 @@ import Picker from './picker'
 			}
 		},
 		components:{
-			Picker
+			Picker,Assort,Reminde 
 		}
 	}
 </script>
