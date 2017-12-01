@@ -1,21 +1,27 @@
 # daysmaster
 
-> A Vue.js project
+> vue+vue-router+vuex一款仿倒数日应用
 
-## Build Setup
+## 将项目clone到本地
 
-``` bash
-# install dependencies
-npm install
+``` git clone https://github.com/scyuan/daysmaster.git
 
-# serve with hot reload at localhost:8080
+## 安装依赖
+
+``` npm install
+	//或者使用cnpm install
+```
+## 安装插件
+
+``` vue-moment  //用于处理时间相关
+	axios       //ajax
+	better-scroll
+	better-picker //仿ios picker插件
+
+	//以上用法可自行百度或者去npm官网上查询
+
+```
+## 运行
 npm run dev
 
-# build for production with minification
-npm run build
-
-# build for production and view the bundle analyzer report
-npm run build --report
-```
-
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+第一次写的vue项目，写的不是很好，有些小bug，但不妨碍运行。基本上是没有什么问题，大部分功能都已经实现。大家感兴趣的可以clone下来，给个star哦，嘻嘻(#^.^#)
