@@ -8,12 +8,13 @@
 
 ## 安装依赖
 
-``` npm install
+```   
+  npm install
 	//或者使用cnpm install
 ```
 ## 安装插件
-
-``` vue-moment  //用于处理时间相关
+```
+  vue-moment  //用于处理时间相关
 	axios       //ajax
 	better-scroll
 	better-picker //仿ios picker插件
