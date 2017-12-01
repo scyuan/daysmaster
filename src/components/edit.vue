@@ -1,21 +1,21 @@
 <template>
 	<transition name='slide'>
-		<div class="add" v-if='isOpen'>
+		<div class="edit" id='edit' ref='edit' v-if='isOpen'>
 			<div class="header">
 		      <i class="icon icon-list" @click='back()'>&#xe666;</i>
-		      <p>添加新日子</p>
-		      <i class="icon icon-add" @click='save()'>保存</i>
+		      <p>编辑</p>
+		      <i class="icon icon-add" @click='save()'>确认</i>
 		    </div>
-		    <div class="content">
+		    <div class="content" ref='cpm'>
 		    	<div class="form">
 		    		<div class="input_group">
 		    			<i class="icon icon-form">&#xe669;</i>
-		    			<input type="text" v-model='name' placeholder="点击这里输入事件名称">
+		    			<input type="text" v-model='desc' placeholder="点击这里输入事件名称">
 		    		</div>  
 		    		<div class="input_group" @click='openCalendar()'>
 		    			<i class="icon icon-form">&#xe635;</i>
 		    			<div class="box">
-		    				<p class="time">2017-11-28 星期三</p>
+		    				<p class="time" id='time'>{{full_time}}</p>
 		    			</div>
 		    		</div>
 		    		<div class="input_group" @click='openAssort()'>
@@ -23,16 +23,18 @@
 		    			<div class="box">
 		    				<p class="a">分类</p>
 		    				<i class="icon icon-form icon-right">&#xe642;</i>
-		    				<p class="b" id='assort'>生活</p>
+		    				<p class="b" id='assort'>{{assort}}</p>
 		    			</div>
 		    		</div>
 		    		<div class="input_group">
 		    			<i class="icon icon-form">&#xe612;</i>
 		    			<div class="box">
-		    				<p style="float:left">置顶</p>
+		    				<p style="float:left;color:#666">置顶</p>
 		    				<div class="btn-wrap" v-on:click='zhiding()'>
-		    					<div class="btn"></div>
-		    					<div class="bg"></div>
+		    					<div class="btn" v-if='zhidingv'></div>
+		    					<div class="bg" v-if='zhidingv'></div>
+		    					<div class="btn btnon" v-if='!zhidingv'></div>
+		    					<div class="bg bgon" v-if='!zhidingv'></div>
 		    				</div>
 		    			</div>
 		    		</div>
@@ -41,7 +43,7 @@
 		    			<div class="box">
 		    				<p class="a">重复</p>
 		    				<i class="icon icon-form icon-right">&#xe642;</i>
-		    				<p class="b" id='recicle'>不重复</p>
+		    				<p class="b" id='recicle'>{{repeat}}</p>
 		    			</div>
 		    		</div>
 		    		<div class="input_group" v-on:click='openReminde()' style="border-bottom:0">
@@ -49,11 +51,11 @@
 		    			<div class="box">
 		    				<p class="a">提醒</p>
 		    				<i class="icon icon-form icon-right">&#xe642;</i>
-		    				<p class="b" id='reminde'>不提醒</p>
+		    				<p class="b" id='reminde'>{{remind}}</p>
 		    			</div>
 		    		</div>      
 		    	</div>
-		    	<div class="submit" @click='save()'>保存</div>	
+		    	<div class="submit" @click='save()'>确认修改</div>	
 		    </div>
 			<picker ref='picker' v-on:returndata='getData' v-on:returndate='getDate'></picker>
 			<assort ref='assort' v-on:returnassort='getAssort'></assort>
@@ -71,86 +73,88 @@ import {dateUtil} from '../util/util'
 			return {
 				isOpen:false,
 				name:'',
+				desc :"",
+				full_time : "",
+				assort : "",
+				repeat : "",
+				remind : '',
 				storage:window.localStorage
 			}
 		},
 		methods:{
 			save:function(){
 				//事件名称
-				var name = this.name;
-				if(name==''){
+				if(this.desc==''){
 					return ;
 				}
 
 				//获取日期
-				var full_time = document.getElementsByClassName('time')[0].innerHTML;
-				var time = full_time.split(' ')[0];
+				var time = this.full_time.split(' ')[0];
 				var date = new Date();
 				var now = date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate();
 				if(this.$moment(time).isBefore(now)){
-					name = name + '已经过去'
+					this.desc = this.desc + '已经过去'
 				}else{
-					name = name + '还有'
+					this.desc = this.desc + '还有'
 				}
 				//获取分类
-				var assort = document.getElementById('assort').innerHTML;
+				//var assort = document.getElementById('assort').innerHTML;  this.assort
 				//获取置顶
 				var oBtn = document.getElementsByClassName('btn')[0];
-				var zhiding = true;
+				
 				if(oBtn.className == 'btn btnon'){
-					zhiding = false;
+					this.zhiding = false;
 				}else{
-					zhiding = true;
+					this.zhiding = true;
 				}
 				//获取重复
-				var repeat = document.getElementById('recicle').innerHTML;
+				//var repeat = document.getElementById('recicle').innerHTML; this.repeat
 				//获取remind
-				var remind = document.getElementById('reminde').innerHTML;
+				//var remind = document.getElementById('reminde').innerHTML; this.remind
 				var record = {
-					full_time:full_time,
-					desc:name,
+					full_time:this.full_time,
+					desc:this.desc,
 					time:time,
-					assort:assort,
-					zhiding:zhiding,
-					repeat:repeat,
-					remind:remind
+					assort:this.assort,
+					zhiding:this.zhiding,
+					repeat:this.repeat,
+					remind:this.remind
 				};
-				this.$store.commit('addNewRecord',record);
+				this.$store.commit('editRecord',{record:record,index:this.index});
 				this.$emit('refresh');
 				this.isOpen = false;
 			},
 			getRemind:function(newRemind){
-				document.getElementById('reminde').innerHTML = newRemind;
+				this.remind = newRemind;
 			},
 			openReminde:function(){
 				this.$refs.reminde.isShow(document.getElementById('reminde').innerHTML);
 			},
 			getAssort:function(newAssore){
-				document.getElementById('assort').innerHTML=newAssore;
+				this.assort = newAssore;
 			},
 			openAssort:function(){
 				var assort = document.getElementById('assort').innerHTML;
 				this.$refs.assort.isShow(assort);
 			},
 			zhiding:function(){
-
 				var btn = document.getElementsByClassName('btn')[0];
-				console.log(btn);
 				var bg = document.getElementsByClassName('bg')[0];
 				if(btn.className=='btn'){
 					btn.className = 'btn btnon';
 					bg.className ='bg bgon'
+					this.zhidingv = false;
 				}else{
 					btn.className = 'btn';
 					bg.className ='bg'
+					this.zhidingv = true;
 				}
 			},
 			getData:function(obj){
-				var repeat = document.getElementById('recicle');
 				if(obj.a==0||obj.b==0){
-					repeat.innerHTML = '不重复'
+					this.repeat = '不重复'
 				}else{
-					repeat.innerHTML = this.$store.state.repeat1[obj.a].text + this.$store.state.repeat2[obj.b].text
+					this.repeat = this.$store.state.repeat1[obj.a].text + this.$store.state.repeat2[obj.b].text
 				}
 			},
 			getDate:function(obj){
@@ -158,10 +162,19 @@ import {dateUtil} from '../util/util'
 				var date = obj.a+'-'+obj.b+'-'+obj.c;
 				var d = new Date(obj.a,obj.b-1,obj.c);
 				var week = dateUtil.getWeek(d);
-				oTime.innerHTML = date+' '+week;
+				this.full_time = date+' '+week;
 			},
-			show:function(){
+			show:function(obj){
 				this.isOpen = true;
+				var item = obj.item;
+				this.index = obj.index;
+				this.item = item;
+				this.desc = item.desc;
+				this.full_time = item.time + ' ' + dateUtil.getWeek(new Date(item.time));
+				this.assort = item.assort;
+				this.repeat = item.repeat;
+				this.remind = item.remind;
+				this.zhidingv = item.zhiding
 			},
 			hide:function(){
 				this.isOpen = false;
@@ -207,7 +220,48 @@ import {dateUtil} from '../util/util'
 		components:{
 			Picker,Assort,Reminde 
 		},
-		
+		beforeCreate () {
+		   console.group('%c%s', 'color:blue', 'beforeCreate 创建前状态===============组件edit》')
+		 },
+		 created () {
+		   console.group('%c%s', 'color:blue', 'created 创建完毕状态===============组件edit》')
+
+		 },
+		 beforeMount () {
+		   console.group('%c%s', 'color:blue', 'beforeMount 挂载前状态===============组件edit》')
+		 },
+		 mounted () {
+		   console.group('%c%s', 'color:blue', 'mounted 挂载状态===============组件edit》')
+		   /* this.$nextTick(function(){
+		        //对DOM的操作放这
+		        console.log(document.getElementById('edit'));
+		    })*/
+		    console.log(this.$refs);
+		    console.log(this.$el)
+		 },
+		 beforeUpdate () {
+		   console.group('%c%s', 'color:blue', 'beforeUpdate 更新前状态===============组件edit》')
+		   console.log(this.$refs.edit);
+		 },
+		 updated () {
+		   console.group('%c%s', 'color:blue', 'updated 更新状态===============组件edit》')
+		    /*console.log(this.$refs.edit);
+		    var btn = document.getElementsByClassName('btn')[0];
+				var bg = document.getElementsByClassName('bg')[0];
+				if(this.zhidingv){
+					btn.className = 'btn';
+					bg.className ='bg'
+				}else{
+					btn.className = 'btn btnon';
+					bg.className ='bg bgon'
+				}*/
+		 },
+		 beforeDestroy () {
+		   console.group('%c%s', 'color:blue', 'beforeDestroy 破前状态===============组件edit》')
+		 },
+		 destroyed () {
+		   console.group('%c%s', 'color:blue', 'destroyed 破坏状态===============组件edit》')
+		 }
 	}
 </script>
 <style scoped>
@@ -228,11 +282,13 @@ import {dateUtil} from '../util/util'
 	.slide-enter-active,.slide-leave-active{
 		transition: all 0.3s ease;
 	}
-	.add{
+	.edit{
 		position: fixed;
 		z-index: 100;
 		width: 100%;
 		height: 100%;
+		top: 0;
+		left: 0;
 		background: #fff;
 	}
 	.content{
@@ -282,6 +338,7 @@ import {dateUtil} from '../util/util'
 	}
 	.box .a{
 		float: left;
+		color:#666;
 	}
 	.box .b{
 		float: right;

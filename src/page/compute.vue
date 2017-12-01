@@ -1,53 +1,82 @@
 <template>
 	<div class="compute" ref='compute'>
 		<div class="content">
-			<div class="title" v-on:click='openCalendar()'>
+			<div class="title" v-on:click='openSatrtCalendar()'>
 				<p>从</p>
-				<p>{{selectedData}}</p>
+				<p id='start'>{{selectedData}}</p>
 				<p>开始</p>
 				<i class="icon icon-jiantou">&#xe647;</i>
 			</div>
 			<div class="daysbefore">
 				<div class="input_area">
-					<input type="text">
+					<input v-model='beforeNumber' @change='computeBefore()' type="text">
 					<div class="btn">天之前</div>
 				</div>
-				<p class="date">公元 1945-3-13 星期三</p>
+				<p class="date" id='date1'>请输入数字开始计算</p>
 			</div>
 			<div class="daysafter">
 				<div class="input_area">
-					<input type="text">
+					<input v-model='afterNumber' @change='computedAfter()' type="text">
 					<div class="btn">天之后</div>
 				</div>
-				<p class="date">公元 1945-3-13 星期三</p>
+				<p class="date" id='date2'>请输入数字开始计算</p>
 			</div>
-			<div class="title">
+			<div class="title" v-on:click='openEndCalendar()'>
 				<p>距离</p>
-				<p>{{selectedData}}</p>
+				<p>{{selectedData1}}</p>
 				<p>还有</p>
 				<i class="icon icon-jiantou">&#xe647;</i>
 			</div>
 			<div class="counts">
-				<p>28607</p>
+				<p>{{count}}</p>
 				<span>Days</span>
 			</div>
 		</div>
-		<datepicker ref="datepicker"></datepicker>
-		<picker ref='picker' v-on:returndate='getDate'></picker>
+		<picker ref='picker' v-on:returndatestart='getSatrtDate' v-on:returndateend='getEndDate'></picker>
 	</div>
 </template>
 <script>
 	import Picker from '../components/picker'
+	import {dateUtil} from '../util/util'
 	export default{
 		data:function(){
 			return {
-				selectedData:'2013-2-12 星期六',
+				selectedData:'',
+				selectedData1:'',
 				isOpen:true,
 	      		value:"",
-	      		date:"2013-10-10"
+	      		date:"2013-10-10",
+	      		beforeNumber:"",
+	      		afterNumber:"",
+	      		beforeDate:'',
+	      		count:0
 			}
 		},
 		methods:{
+			computeBefore:function(){
+				var beforeNumber =  parseInt(this.beforeNumber);
+				//将beforeNumver转为毫秒
+				beforeNumber = beforeNumber * 24 * 60 * 60 * 1000;
+				var select = this.selectedData.split(' ')[0];
+				var select_number = new Date(select).getTime();
+
+				var newTime = new Date(select_number-beforeNumber);
+				document.getElementById('date1').innerHTML ='公历 '+ newTime.getFullYear() + '-' + (newTime.getMonth()+1)+'-'+newTime.getDate();
+				var week = dateUtil.getWeek(newTime);
+				document.getElementById('date1').innerHTML = document.getElementById('date1').innerHTML + ' ' + week;
+			},
+			computedAfter:function(){
+				var afterNumber = parseInt(this.afterNumber);
+
+				afterNumber = afterNumber *24*60*60*1000;
+				var select = this.selectedData1.split(' ')[0];
+				var select_number = new Date(select).getTime();
+
+				var newTime = new Date(select_number+afterNumber);
+				document.getElementById('date2').innerHTML ='公历 '+ newTime.getFullYear() + '-' + (newTime.getMonth()+1)+'-'+newTime.getDate();
+				var week = dateUtil.getWeek(newTime);
+				document.getElementById('date2').innerHTML = document.getElementById('date2').innerHTML + ' ' + week;
+			},
 			initSize:function(){
 				var _this = this;
 				//离顶部距离
@@ -57,46 +86,41 @@
 				console.log(height)
 				_this.$refs.compute.style.height=(height-offsetTop)+'px'
 			},
-			handleSelect(value){
-		        this.value = value;
-		    },
-		    openPicker(){
-		        this.$refs.datepicker.openPicker();
-		    },
 		    closePicker(){
 		        this.isOpen = false;
 		    },
-		    openCalendar:function(){
-				var datas = [];
-				var year = [];
-				for(let i=1900;i<2200;i++){
-					var temp ={}
-					temp.text = i+'年';
-					temp.value = i;
-					year.push(temp)
-				}
-				var month = [];
-				for(let i=1;i<13;i++){
-					var temp ={}
-					temp.text = i+'月';
-					temp.value = i;
-					month.push(temp)
-				}
-				var date = [];
-				for(let i=1;i<32;i++){
-					var temp ={}
-					temp.text = i+'日';
-					temp.value = i;
-					date.push(temp)
-				}
-				datas.push(year);
-				datas.push(month);
-				datas.push(date);
-				this.$refs.picker.isShow("returndate",datas);
+		    openSatrtCalendar:function(){
+				var datas = dateUtil.initCalendarPickerDatas();
+				this.$refs.picker.isShow("returndatestart",datas);
+			},
+			openEndCalendar:function(){
+				var datas = dateUtil.initCalendarPickerDatas();
+				this.$refs.picker.isShow("returndateend",datas);
+			},
+			getSatrtDate:function(obj){
+				var date = obj.a+'-'+obj.b+'-'+obj.c;
+				var d = new Date(obj.a,obj.b-1,obj.c);
+				var week = dateUtil.getWeek(d)
+				this.selectedData = date+' '+week;
+				this.count = dateUtil.getDiff(this.selectedData.split(' ')[0],this.selectedData1.split(' ')[0],false);
+			},
+			getEndDate:function(obj){
+				var date = obj.a+'-'+obj.b+'-'+obj.c;
+				var d = new Date(obj.a,obj.b-1,obj.c);
+				var week = dateUtil.getWeek(d)
+				this.selectedData1 = date+' '+week;
+				this.count = dateUtil.getDiff(this.selectedData.split(' ')[0],this.selectedData1.split(' ')[0],false);
 			},
 		},
-		getDate:function(val){
-			alert(val);
+		created:function(){
+			//初始化一些数据
+			var date = new Date();
+			var now = date.getFullYear() + '-' + (date.getMonth()+1)+'-'+date.getDate();
+			console.log('date:'+date);
+			var week = dateUtil.getWeek(date);
+			var now = now + ' ' + week;
+			this.selectedData = now;
+			this.selectedData1 = now;
 		},
 		mounted:function(){
 			var _this = this;

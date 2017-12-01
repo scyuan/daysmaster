@@ -120,7 +120,7 @@
 			back(){
 				this.isHide();
 			}
-		}
+		},
 	}
 </script>
 <style scoped>

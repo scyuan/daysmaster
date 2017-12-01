@@ -12,30 +12,58 @@
 			</div>
 			<div class="list" ref="wrap">
 				<div class="items">
-					<div class="item" v-for='item in list'>
+					<div class="item" v-for='(item,index) in list' @click='detail(index)'>
 						<div class="detail">
 							<div class="desc">{{item.desc}}</div>
-							<div class="num">{{item.days}}</div>
-							<div class="tian">天</div>
+							<div class="num" v-if='!isBefore(item.time)'>{{item.days}}</div>
+							<div class="tian" v-if='!isBefore(item.time)'>天</div>
+
+							<div class="num num_yellow" v-if='isBefore(item.time)'>{{item.days}}</div>
+							<div class="tian tian_yellow" v-if='isBefore(item.time)'>天</div>
+
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
+		<detail ref='detail' v-on:openedit='openEdit'></detail>
+		<edit ref='edit'></edit>
 	</div>
 </template>
 <script>
 	import BScroll from 'better-scroll';
+	import Detail from '../components/detail'
+	import Edit from '../components/edit'
+
 	export default{
 		data:function(){
 			return{
 				list:[],
 				zhiding:{
-					
+
 				}
 			}
 		},
+		components:{
+			Detail,Edit
+		},
 		methods:{
+			openEdit(obj){
+				this.$refs.detail.isHide();
+				this.$refs.edit.show(obj);
+			},
+			detail(index){
+				this.$refs.detail.isShow(this.list[index],index);
+			},
+			isBefore(time){
+				var date = new Date();
+				var now = date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate();
+				if(this.$moment(time).isBefore(now)){
+					return true;
+				}else{
+					return false;
+				}
+			},
 			refresh:function(){
 				this.getData();
 			},
@@ -72,30 +100,40 @@
 					list[i].days = this.computeDayas(list[i].time);
 				}
 				this.list = list;
-				var temp = this.list;
-				
+			
 				//置顶
-				for(let i=0;i<temp.length;i++){
-					if(temp[i].zhiding){
-						this.zhiding = temp[i];
+				for(let i=0;i<list.length;i++){
+					if(list[i].zhiding){
+						this.zhiding = list[i];
 						break ;
 					}
 				}
-				/*var date = new Date();
+
+				var date = new Date();
 				var now = date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate();
 				if(this.$moment(this.zhiding.time).isBefore(now)){
-					this.zhiding.full_time = '起始日：'+ this.zhiding.full_time
+					if(this.zhiding.full_time.match('起始日')=='起始日'){}else{
+						this.zhiding.full_time = '起始日：'+ this.zhiding.full_time
+					}
 				}else{
-					this.zhiding.full_time = '目标日：'+ this.zhiding.full_time
-				}*/
-				console.log(this.$store.state.records);
-
+					if(this.zhiding.full_time.match('目标日')=='目标日'){}else{
+						this.zhiding.full_time = '目标日：'+ this.zhiding.full_time
+					}
+				}
 			}
 		},
+		beforeCreate () {
+		   console.group('%c%s', 'color:green', 'beforeCreate 创建前状态===============组件home》')
+		 },
+		 beforeMount () {
+		   console.group('%c%s', 'color:green', 'beforeMount 挂载前状态===============组件home》')
+		 },
 		created:function(){
-			this.getData();
+			console.group('%c%s', 'color:green', 'created 创建完状态===============组件home》')
+			this.getData();			
 		},
 		mounted:function() {
+			console.group('%c%s', 'color:green', 'mounted 挂载状态===============组件home》')
 			var _this = this;
 			_this.initSize();
 			window.onresize=function(){
@@ -110,6 +148,7 @@
 					_this.scroll.refresh();
 				}
 			})
+			console.log(document.getElementsByClassName('home')[0])
 		}
 	}
 </script>
@@ -218,5 +257,11 @@
 		font-weight: bold;
 		color: #fff;
 		text-align: center;
+	}
+	.detail .num_yellow{
+		background: #FFA044;
+	}
+	.detail .tian_yellow{
+		background: #B05800;
 	}
 </style>

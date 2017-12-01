@@ -55,6 +55,10 @@ const mutations = {
 		var obj = JSON.stringify(state.records);
 		window.localStorage.setItem('records',obj);
 	},
+	editRecord(state,obj){
+		state.records[obj.index] = obj.record;
+		window.localStorage.setItem('records',obj);
+	},
 	f5records(state){
 		var obj=JSON.parse(window.localStorage.getItem("records"));
 		//判断是否有记录
@@ -65,5 +69,6 @@ const mutations = {
 
 }
 export default new Vuex.Store({
+
 	state,mutations
 });

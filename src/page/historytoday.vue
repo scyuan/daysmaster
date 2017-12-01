@@ -58,7 +58,7 @@ import BScroll from 'better-scroll';
 
 			//post获取数据
 			var param = 'showapi_appid=50890&showapi_sign=7209f2aabb4e49fdaf96b50f7f187b51'
-			this.$http.post('/119-42',param).then(function(res){
+			this.$http.post('http://route.showapi.com/119-42',param).then(function(res){
 				console.log(res);
 				_this.list = res.data.showapi_res_body.list;
 				_this.$nextTick(function(){
@@ -81,6 +81,7 @@ import BScroll from 'better-scroll';
 		height: 60px;
 		padding: 0 40px;
 		box-sizing: border-box;
+		background: #fff;
 		display: flex;
 	}
 	.item .year{
