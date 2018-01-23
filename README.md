@@ -16,12 +16,6 @@ npm install
 
 vue-moment  用于处理时间相关
   
-axios   
-  
-better-scroll
-  
-better-picker 仿ios picker插件
-  
 以上用法可自行百度或者去npm官网上查询
 
 
